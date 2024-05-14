@@ -16,7 +16,13 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from views import *
+# TODO: add here your API URLs
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+	path("equations/fetch/", fetch_equations),
+	path("equations/create/", save_equations),
+	path("equations/solve/", solve_equations),
+#	path("products/delete/", views.products_delete),
+#	path("products/docs/", schema_view),
 ]
