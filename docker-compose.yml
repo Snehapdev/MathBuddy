@@ -4,7 +4,8 @@ services:
     build:
       context: ./equation_solver_service
       dockerfile: Dockerfile
-    command: 'python manage.py runserver 0.0.0.0:8000'
+    command: >
+      sh -c "export PYTHONPATH=/app && python /app/equation_solver_service/manage.py runserver 0.0.0.0:8000"
     ports:
       - 8000:8000
     volumes:
@@ -12,6 +13,8 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    environment:
+      - DJANGO_SETTINGS_MODULE=equation_solver_service.settings
 
   db:
     image: postgres
@@ -27,5 +30,6 @@ services:
       test: ["CMD", "pg_isready", "-q", "-h", "localhost", "-U", "userone"]
       timeout: 10s
       retries: 5
+
 volumes:
   dbdata:
