@@ -1,9 +1,7 @@
 from rest_framework import serializers
-
-from .models import Equation
-
+from equation_solver_service.api.models import Equation
 
 class EquationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Equation
-        fields = '__all__'
+        fields = ['equation', 'solution']
