@@ -9,7 +9,7 @@ from equation_solver_service.services.equation_solver import solve_linear_equati
 from equation_solver_service.services.equation_solver import solve_trigonometric_equation
 import logging
 from django.urls import path
-
+from drf_yasg.utils import swagger_auto_schema
 
 
 
@@ -33,6 +33,7 @@ def fetch_equations(request):
     serializer = EquationSerializer(equations, many=True)
     return Response(serializer.data)
 
+@swagger_auto_schema(method='post', request_body=EquationSerializer)
 @api_view(http_method_names=["POST"])
 def solve_equations(request):
     try:
@@ -62,6 +63,7 @@ def solve_equations(request):
 
     return JsonResponse({'equation': equation, 'solution': solution})
 
+@swagger_auto_schema(method='post', request_body=EquationSerializer)
 @api_view(http_method_names=["POST"])
 def save_equations(request):
     try:
