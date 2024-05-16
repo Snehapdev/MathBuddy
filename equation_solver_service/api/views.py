@@ -8,6 +8,7 @@ from equation_solver_service.services.equation_solver import solve_arithmetic_eq
 from equation_solver_service.services.equation_solver import solve_linear_equation
 from equation_solver_service.services.equation_solver import solve_trigonometric_equation
 import logging
+from django.urls import path
 
 
 
@@ -22,6 +23,8 @@ handler = logging.StreamHandler()
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 handler.setFormatter(formatter)
 logger.addHandler(handler)
+
+
 
 # Create your views here.
 @api_view(http_method_names=["GET"])

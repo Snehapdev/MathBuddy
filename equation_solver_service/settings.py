@@ -39,6 +39,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'equation_solver_service',
+    'rest_framework_swagger',
+    'drf_yasg',
+
 
 ]
 
@@ -54,10 +57,14 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'api.urls'
 
+# Add the following lines if not already present
+import os
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
