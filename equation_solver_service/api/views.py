@@ -5,11 +5,13 @@ from rest_framework.decorators import api_view
 import json
 from django.http import JsonResponse
 from equation_solver_service.services.equation_solver import solve_arithmetic_equation
-from equation_solver_service.services.equation_solver import solve_linear_equation
+from equation_solver_service.services.equation_solver import solve_linear_equations
 from equation_solver_service.services.equation_solver import solve_trigonometric_equation
 import logging
 from django.urls import path
 from drf_yasg.utils import swagger_auto_schema
+from rest_framework import status
+
 
 
 
@@ -23,7 +25,6 @@ handler = logging.StreamHandler()
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 handler.setFormatter(formatter)
 logger.addHandler(handler)
-
 
 
 # Create your views here.
@@ -52,7 +53,7 @@ def solve_equations(request):
         if equation_type == 'arithmetic':
             solution = solve_arithmetic_equation(equation)
         elif equation_type == 'linear':
-            solution = solve_linear_equation(equation)
+            solution = solve_linear_equations(equation)
         elif equation_type == 'trigonometric':
             solution = solve_trigonometric_equation(equation)
         else:
@@ -60,8 +61,11 @@ def solve_equations(request):
     except Exception as e:
         logger.error("Missing required parameters.", e)
         return JsonResponse({'error': str(e)}, status=400)
+    
+    result = {"equation": equation, "type": equation_type, "solution": solution}
+    return JsonResponse({'message': 'Equation solver successfully', 'data': result}, status=status.HTTP_200_OK)
 
-    return JsonResponse({'equation': equation, 'solution': solution})
+
 
 @swagger_auto_schema(method='post', request_body=EquationSerializer)
 @api_view(http_method_names=["POST"])
