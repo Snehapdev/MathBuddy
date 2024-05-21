@@ -1,2 +1,3 @@
 .env
 math_buddy_env
+__pycache__

@@ -15,6 +15,7 @@ services:
         condition: service_healthy
     environment:
       - DJANGO_SETTINGS_MODULE=equation_solver_service.settings
+      
 
   db:
     image: postgres
