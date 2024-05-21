@@ -63,7 +63,7 @@ def solve_equations(request):
         return JsonResponse({'error': str(e)}, status=400)
     
     result = {"equation": equation, "type": equation_type, "solution": solution}
-    return JsonResponse({'message': 'Equation solver successfully', 'data': result}, status=status.HTTP_200_OK)
+    return JsonResponse({'message': 'Equation solved successfully', 'data': result}, status=status.HTTP_200_OK)
 
 
 
