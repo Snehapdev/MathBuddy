@@ -49,12 +49,16 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'UI.urls'
+ROOT_URLCONF = 'user_interface.urls'
+
+import os
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -67,16 +71,20 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'UI.wsgi.application'
+WSGI_APPLICATION = 'user_interface.wsgi.application'
 
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+     "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": "mathbuddy",
+        "USER": "userone",
+        "PASSWORD": "12345",
+        "HOST": "db",
+        "PORT": "5432",
     }
 }
 

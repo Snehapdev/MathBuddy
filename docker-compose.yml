@@ -15,6 +15,22 @@ services:
         condition: service_healthy
     environment:
       - DJANGO_SETTINGS_MODULE=equation_solver_service.settings
+
+  UI-Interface:
+    build:
+      context: ./UI
+      dockerfile: Dockerfile
+    command: >
+      sh -c "export PYTHONPATH=/app && python /app/UI/manage.py runserver 0.0.0.0:9000"
+    ports:
+      - 9000:9000
+    volumes:
+      - .:/app
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - DJANGO_SETTINGS_MODULE=UI.settings
       
 
   db:
