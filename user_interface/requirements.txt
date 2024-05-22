@@ -2,6 +2,4 @@ psycopg2==2.9.3
 django==4.1.2
 djangorestframework
 requests
-sympy
-django-rest-swagger
-drf_yasg
+django-cors-headers
