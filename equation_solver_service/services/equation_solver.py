@@ -59,4 +59,26 @@ def solve_linear_equations(equations):
         raise ValueError(f"Could not parse or solve the equations: {str(e)}")
 
 def solve_trigonometric_equation(equation):
-    pass
+    try:
+        # Split the equation into left-hand side (lhs) and right-hand side (rhs)
+        lhs, rhs = equation.split('=')
+        
+        # Define the variable
+        x = sp.symbols('x')
+        
+        # Parse the lhs and rhs expressions
+        lhs_expr = sp.sympify(lhs.strip())
+        rhs_expr = sp.sympify(rhs.strip())
+        
+        # Create the equation
+        trig_eq = sp.Eq(lhs_expr, rhs_expr)
+        
+        # Solve the equation
+        solutions = sp.solve(trig_eq, x)
+        # Convert SymPy objects to native Python types
+        solution = [float(s) if isinstance(s, sp.Float) else int(s) if isinstance(s, sp.Integer) else s.evalf() for s in solutions]
+        
+        return solution
+    except Exception as e:
+        raise ValueError(f"Could not parse or solve the equation: {str(e)}")
+
