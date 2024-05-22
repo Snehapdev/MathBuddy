@@ -1,5 +1,6 @@
 
 import sympy as sp
+from sympy import Symbol, Eq, solve, pi, Interval
 import re
 
 def solve_arithmetic_equation(equation):
@@ -58,27 +59,45 @@ def solve_linear_equations(equations):
     except Exception as e:
         raise ValueError(f"Could not parse or solve the equations: {str(e)}")
 
-def solve_trigonometric_equation(equation):
-    try:
-        # Split the equation into left-hand side (lhs) and right-hand side (rhs)
-        lhs, rhs = equation.split('=')
-        
-        # Define the variable
-        x = sp.symbols('x')
-        
-        # Parse the lhs and rhs expressions
-        lhs_expr = sp.sympify(lhs.strip())
-        rhs_expr = sp.sympify(rhs.strip())
-        
-        # Create the equation
-        trig_eq = sp.Eq(lhs_expr, rhs_expr)
-        
-        # Solve the equation
-        solutions = sp.solve(trig_eq, x)
-        # Convert SymPy objects to native Python types
-        solution = [float(s) if isinstance(s, sp.Float) else int(s) if isinstance(s, sp.Integer) else s.evalf() for s in solutions]
-        
-        return solution
-    except Exception as e:
-        raise ValueError(f"Could not parse or solve the equation: {str(e)}")
+def solve_trigonometric_equation(equation, range_start=-2*pi, range_end=2*pi):
+  try:
+    # Preprocess the equation
+    equation = equation.strip()
+    equation = re.sub(r'√([a-zA-Z0-9]*)', r'sqrt(\1)', equation)  # Replace sqrt with sqrt()
+    equation = re.sub(r'(sqrt\(\d+\)|sqrt\d+|\d+)([a-zA-Z])', r'\1*\2', equation)  # Add * between numbers and variables
 
+    # Split the equation into lhs and rhs
+    lhs, rhs = equation.split('=')
+
+    # Create sympy expressions for lhs and rhs
+    lhs_expr = sp.sympify(lhs.strip())
+    rhs_expr = sp.sympify(rhs.strip())
+
+    # Identify the variables in the equation
+    variables = lhs_expr.free_symbols.union(rhs_expr.free_symbols)
+
+    # Check if number of variables is acceptable
+    if len(variables) > 1:
+      # Allow for multiple trig functions of the same variable
+      all_trig_funcs = True
+      for var in variables:
+        if not (sp.is_Function(var) and sp.trigify(var) == var):
+          all_trig_funcs = False
+          break
+      if not all_trig_funcs:
+        raise ValueError("Only single-variable equations or equations with multiple trig functions of the same variable are supported.")
+
+    # Solve the equation (assuming single variable or multiple trig functions of the same variable)
+    variable = variables.pop()  # Extract a variable (might be the only one or representative)
+    solution = sp.solve(Eq(lhs_expr, rhs_expr), variable, domain=Interval(range_start, range_end))
+
+    # Convert SymPy objects to native Python types (consider real solutions)
+    solution_list = []
+    for sol in solution:
+      if sol.is_real:
+        solution_list.append(float(sol.evalf(10)))  # Evaluate with 10 digits precision
+
+    return solution_list
+
+  except Exception as e:
+    raise ValueError(f"Could not parse or solve the equation: {str(e)}")
