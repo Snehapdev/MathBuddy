@@ -53,8 +53,9 @@
                         displayResult(response.data.solution);
                     },
                     error: function (error) {
+                        const resultDiv = $('#result');
                         resultDiv.empty(); 
-                        resultDiv.text(`Error: ${error}`);
+                        resultDiv.text(`Error: ${error.responseJSON.error}`);
                         console.log('Error:', error);
                     }
                 });
