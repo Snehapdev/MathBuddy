@@ -1,4 +1,6 @@
 .env
 math_buddy_env
 __pycache__
-
+equation_solver_service/__pycache__
+equation_solver_service/services/__pycache__
+user_interface/__pycache__/
