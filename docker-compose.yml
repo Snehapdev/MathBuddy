@@ -16,12 +16,12 @@ services:
     environment:
       - DJANGO_SETTINGS_MODULE=equation_solver_service.settings
 
-  UI-Interface:
+  user_interface:
     build:
-      context: ./UI
+      context: ./user_interface
       dockerfile: Dockerfile
     command: >
-      sh -c "export PYTHONPATH=/app && python /app/UI/manage.py runserver 0.0.0.0:9000"
+      sh -c "export PYTHONPATH=/app && python /app/user_interface/manage.py runserver 0.0.0.0:9000"
     ports:
       - 9000:9000
     volumes:
@@ -30,7 +30,7 @@ services:
       db:
         condition: service_healthy
     environment:
-      - DJANGO_SETTINGS_MODULE=UI.settings
+      - DJANGO_SETTINGS_MODULE=user_interface.settings
       
 
   db:
@@ -44,7 +44,7 @@ services:
     ports:
       - 5432:5432
     healthcheck:
-      test: ["CMD", "pg_isready", "-q", "-h", "localhost", "-U", "userone"]
+      test: ["CMD", "pg_isready", "-q", "-h", "localhost", "-U", "mathbuddy"]
       timeout: 10s
       retries: 5
 
