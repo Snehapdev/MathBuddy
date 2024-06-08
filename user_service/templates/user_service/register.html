@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .register-container {
+            margin-top: 50px;
+        }
+        .register-form {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .register-form h1 {
+            margin-bottom: 30px;
+        }
+        .register-form input[type="submit"] {
+            width: 100%;
+        }
+        .signin-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container register-container">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="register-form">
+                    <h1 class="text-center">Register Now!</h1>
+                    <form method="POST" autocomplete="off">
+                        {% csrf_token %}
+                        {{ registerform.non_field_errors }}
+                        <div class="form-group">
+                            {{ registerform.username }}
+                            {{ registerform.username.errors }}
+                        </div>
+                        <div class="form-group">
+                            {{ registerform.email }}
+                            {{ registerform.email.errors }}
+                        </div>
+                        <div class="form-group">
+                            {{ registerform.password1 }}
+                            {{ registerform.password1.errors }}
+                        </div>
+                        <div class="form-group">
+                            {{ registerform.password2 }}
+                            {{ registerform.password2.errors }}
+                        </div>
+                        <input type="submit" class="btn btn-primary mt-3" value="Register">
+                    </form>
+                    <div class="signin-link">
+                        <p>Existing User? <a href="{% url 'login' %}">Sign in here</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+</body>
+</html>

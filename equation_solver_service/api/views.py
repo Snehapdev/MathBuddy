@@ -11,6 +11,8 @@ import logging
 from django.urls import path
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status
+from drf_yasg import openapi
+
 
 
 
@@ -27,10 +29,16 @@ handler.setFormatter(formatter)
 logger.addHandler(handler)
 
 
-# Create your views here.
+@swagger_auto_schema(method='get', manual_parameters=[
+    openapi.Parameter('user_id', openapi.IN_QUERY, description="User ID", type=openapi.TYPE_STRING),
+])
 @api_view(http_method_names=["GET"])
 def fetch_equations(request):
-    equations = Equation.objects.all()
+    user_id = request.query_params.get('user_id')  # Assuming user_id is passed as a query parameter
+    if not user_id:
+        return Response({"error": "user_id parameter is required"}, status=status.HTTP_400_BAD_REQUEST)
+
+    equations = Equation.objects.filter(user_id=user_id)
     serializer = EquationSerializer(equations, many=True)
     return Response(serializer.data)
 
