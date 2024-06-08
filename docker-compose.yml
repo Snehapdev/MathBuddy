@@ -13,12 +13,8 @@ services:
     depends_on:
       db:
         condition: service_healthy
-      redis:
-        condition: service_started
     environment:
       - DJANGO_SETTINGS_MODULE=equation_solver_service.settings
-      - REDIS_HOST=redis
-      - REDIS_PORT=6379
 
   user_service:
     build:
@@ -33,12 +29,8 @@ services:
     depends_on:
       db:
         condition: service_healthy
-      redis:
-        condition: service_started
     environment:
       - DJANGO_SETTINGS_MODULE=user_service.settings
-      - REDIS_HOST=redis
-      - REDIS_PORT=6379
 
   user_interface:
     build:
@@ -53,12 +45,9 @@ services:
     depends_on:
       db:
         condition: service_healthy
-      redis:
-        condition: service_started
     environment:
       - DJANGO_SETTINGS_MODULE=user_interface.settings
-      - REDIS_HOST=redis
-      - REDIS_PORT=6379
+      
 
   db:
     image: postgres
@@ -75,11 +64,5 @@ services:
       timeout: 10s
       retries: 5
 
-  redis:
-    image: redis:alpine
-    ports:
-      - 6379:6379
-
 volumes:
   dbdata:
-

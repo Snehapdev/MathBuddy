@@ -34,7 +34,7 @@ logger.addHandler(handler)
 ])
 @api_view(http_method_names=["GET"])
 def fetch_equations(request):
-    user_id = request.query_params.get('user_id')  # Assuming user_id is passed as a query parameter
+    user_id = request.query_params.get('user_id') 
     if not user_id:
         return Response({"error": "user_id parameter is required"}, status=status.HTTP_400_BAD_REQUEST)
 
