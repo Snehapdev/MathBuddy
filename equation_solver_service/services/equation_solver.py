@@ -28,7 +28,7 @@ def solve_linear_equations(equations):
         equations = [eq.strip() for eq in equations.split(',')]
         # Preprocess the equations to replace sqrt and add * between numbers and variables
         for i, equation in enumerate(equations):
-            equation = re.sub(r'√([a-zA-Z0-9]*)', r'sqrt(\1)', equation)
+            equation = re.sub(r'√([0-9]*)', r'sqrt(\1)', equation)
             equation = re.sub(r'(sqrt\(\d+\)|sqrt\d+|\d+)([a-zA-Z])', r'\1*\2', equation)
             equations[i] = equation
         

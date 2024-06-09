@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>User Equations</title>
+</head>
+<body>
+    <h1>Your Saved Equations</h1>
+    <a href="{% url 'dashboard' %}">Back to Dashboard</a>
+    <ul>
+        {% for equation in equations %}
+            <li>{{ equation }}</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

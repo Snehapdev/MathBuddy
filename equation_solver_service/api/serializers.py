@@ -4,4 +4,4 @@ from equation_solver_service.api.models import Equation
 class EquationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Equation
-        fields = ['equation', 'type', 'solution']
+        fields = ['equation', 'type', 'solution', 'user']

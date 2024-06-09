@@ -16,6 +16,22 @@ services:
     environment:
       - DJANGO_SETTINGS_MODULE=equation_solver_service.settings
 
+  user_service:
+    build:
+      context: ./user_service
+      dockerfile: Dockerfile
+    command: >
+      sh -c "export PYTHONPATH=/app && python /app/user_service/manage.py runserver 0.0.0.0:8002"
+    ports:
+      - 8002:8002
+    volumes:
+      - .:/app
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - DJANGO_SETTINGS_MODULE=user_service.settings
+
   user_interface:
     build:
       context: ./user_interface

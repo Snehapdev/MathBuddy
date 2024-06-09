@@ -1,4 +1,5 @@
 from django.db import models
+from django.conf import settings
 
 # Create your models here.
 class Equation(models.Model):
@@ -6,7 +7,7 @@ class Equation(models.Model):
     equation = models.CharField(max_length=255)
     solution = models.CharField(max_length=255)
     type =  models.CharField(max_length=255)
-    #user_id = models.ForeignKey('Users', on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.equation

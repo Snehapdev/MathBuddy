@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bootstrap Input Form</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .logout {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+        #equationSection {
+            float: left;
+            width: 25%;
+            margin-right: 5%;
+        }
+        #resultSection {
+            float: left;
+            width: 65%;
+        }
+        #saveButton {
+            display: none;
+        }
+        .btn-container {
+            display: flex;
+            flex-direction: row;
+        }
+        .form-group input {
+            max-width: 400px;
+        }
+    </style>
+</head>
+<body>
+    <a href="{% url 'logout' %}" class="logout">Logout</a>
+
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div id="equationSection">
+                <button id="fetchEquations" class="btn btn-primary">View My Equations</button>
+                <div id="equations"></div>
+            </div>
+            <div id="resultSection">
+                <form id="inputForm">
+                    <div class="form-group">
+                        <label for="equation">Equation</label>
+                        <input type="text" class="form-control" id="equation" placeholder="Enter equation">
+                    </div>
+                    <div class="form-group">
+                        <label for="type">Type</label>
+                        <input type="text" class="form-control" id="type" placeholder="Enter type">
+                    </div>
+                    <div class="btn-container">
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                        <button id="saveButton" class="btn btn-success ml-2">Save</button>
+                    </div>
+                </form>
+                <!-- Result display area -->
+                <div id="result" class="mt-4"></div>
+                <div id="saveButtonWrapper" class="mt-2"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            let currentSolution = '';
+
+            $('#fetchEquations').click(function() {
+                $.ajax({
+                    url: 'http://localhost:8000/equations/fetch/',
+                    type: 'GET',
+                    data: { user_id: {{ user.id }} },  
+                    success: function(data) {
+                        let equations = data;
+                        let html = '<ul>';
+                        if (equations.length === 0) {
+                            alert('No Saved Equations found!');
+                        } else {
+                            for (let eq of equations) {
+                                html += `<li>Equation: ${eq.equation}, Type: ${eq.type}, Solution: ${eq.solution}</li>`;
+                            }
+                        }
+                        html += '</ul>';
+                        $('#equations').html(html);
+                    },
+                    error: function(error) {
+                        console.log('Error fetching equations:', error);
+                    }
+                });
+            });
+
+            $('#inputForm').on('submit', function(e) {
+                e.preventDefault();
+
+                const data = {
+                    equation: $('#equation').val(),
+                    type: $('#type').val()
+                };
+
+                $.ajax({
+                    type: 'POST',
+                    url: 'http://localhost:8000/equations/solve/',
+                    contentType: 'application/json',
+                    data: JSON.stringify(data),
+                    success: function (response) {
+                        console.log('Success:', response);
+                        displayResult(response.data.solution);
+                        $('#saveButton').show();
+                    },
+                    error: function (error) {
+                        currentSolution = ''
+                        const resultDiv = $('#result');
+                        resultDiv.empty(); 
+                        resultDiv.text(`Error: ${error.responseJSON.error}`);
+                        console.log('Error:', error);
+                    }
+                });
+            });
+
+            $('#saveButton').click(function() {
+                const data = {
+                    equation: $('#equation').val(),
+                    type: $('#type').val(),
+                    solution: currentSolution,
+                    user: {{ user.id }} 
+                };
+
+                $.ajax({
+                    type: 'POST',
+                    url: 'http://localhost:8000/equations/save/',
+                    contentType: 'application/json',
+                    data: JSON.stringify(data),
+                    success: function (response) {
+                        console.log('Equations saved:', response);
+                        alert('Equations saved successfully!');
+                    },
+                    error: function (error) {
+                        console.log('Error saving equations:', error);
+                        alert('Error saving equations.');
+                    }
+                });
+            });
+
+            function displayResult(solution) {
+                const resultDiv = $('#result');
+                resultDiv.empty(); 
+                if (typeof solution === 'number') {
+                    resultDiv.text(`Solution: ${solution}`);
+                } else if (typeof solution === 'object') {
+                    if (Array.isArray(solution)) {
+                        const solutionString = solution.join(', ');
+                        currentSolution = solutionString;
+                        resultDiv.text(`Solution: ${solutionString}`);
+                    } else {
+                        resultDiv.text('Unexpected result format');
+                    }
+                }
+                $('#saveButtonWrapper').html('<button id="saveButton" class="btn btn-success">Save Equations</button>');
+            }
+        });
+    </script>
+</body>
+</html>
