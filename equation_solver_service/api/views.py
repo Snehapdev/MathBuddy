@@ -4,9 +4,9 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view
 import json
 from django.http import JsonResponse
-from equation_solver_service.services.equation_solver import solve_arithmetic_equation
-from equation_solver_service.services.equation_solver import solve_linear_equations
-from equation_solver_service.services.equation_solver import solve_trigonometric_equation
+from services.equation_solver import solve_arithmetic_equation
+from services.equation_solver import solve_linear_equations
+from services.equation_solver import solve_trigonometric_equation
 import logging
 from django.urls import path
 from drf_yasg.utils import swagger_auto_schema
@@ -17,7 +17,7 @@ from drf_yasg import openapi
 
 
 
-from equation_solver_service.api.serializers import EquationSerializer
+from api.serializers import EquationSerializer
 
 
 # Configure logging

@@ -119,14 +119,6 @@ DATABASES = {
         "PASSWORD": "12345",
         "HOST": "db",
         "PORT": "5432",
-    },
-    "test": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": "test_mathbuddy",
-        "USER": "userone",
-        "PASSWORD": "12345",
-        "HOST": "db",
-        "PORT": "5432",
     }
 }
 

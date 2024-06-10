@@ -7,7 +7,7 @@ import re
 class SolveEquationsTest(TestCase):
 
     def test_solve_linear_equations_valid_input(self):
-        equations = ""
+        equations = "2x + 3y = 5, 4x - y = 3"
         expected_output = {"x": 1.00, "y": 1.00}  # Define expected output as a dictionary
         result = solve_linear_equations(equations)
         
