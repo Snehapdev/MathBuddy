@@ -63,6 +63,20 @@ services:
       test: ["CMD", "pg_isready", "-q", "-h", "localhost", "-U", "mathbuddy"]
       timeout: 10s
       retries: 5
+  
+  test:
+    build:
+      context: ./equation_solver_service
+      dockerfile: Dockerfile
+    command: >
+      sh -c "export PYTHONPATH=/app && python /app/equation_solver_service/manage.py test api.tests --keepdb"
+    volumes:
+      - .:/app
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - DJANGO_SETTINGS_MODULE=equation_solver_service.settings
 
 volumes:
   dbdata:

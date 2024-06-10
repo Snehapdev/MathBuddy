@@ -39,9 +39,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'equation_solver_service',
     'rest_framework_swagger',
     'drf_yasg',
+    'api'
 ]
 
 MIDDLEWARE = [
@@ -119,8 +119,17 @@ DATABASES = {
         "PASSWORD": "12345",
         "HOST": "db",
         "PORT": "5432",
+    },
+    "test": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": "test_mathbuddy",
+        "USER": "userone",
+        "PASSWORD": "12345",
+        "HOST": "db",
+        "PORT": "5432",
     }
 }
+
 
 
 # Password validation

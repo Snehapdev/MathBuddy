@@ -1,4 +1,4 @@
-from equation_solver_service.api.models import Equation
+from api.models import Equation
 from rest_framework.response import Response
 
 from rest_framework.decorators import api_view
