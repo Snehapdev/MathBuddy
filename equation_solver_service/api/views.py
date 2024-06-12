@@ -36,6 +36,16 @@ def fetch_equations(request):
     serializer = EquationSerializer(equations, many=True)
     return Response(serializer.data)
 
+@api_view(["GET"])
+def fetch_equation_by_id(request, equation_id):
+    try:
+        equation = Equation.objects.get(id=equation_id)
+    except Equation.DoesNotExist:
+        return Response({"error": "Equation not found"}, status=status.HTTP_404_NOT_FOUND)
+
+    serializer = EquationSerializer(equation)
+    return Response(serializer.data)
+
 @swagger_auto_schema(method='post', request_body=EquationSerializer)
 @api_view(http_method_names=["POST"])
 def solve_equations(request):

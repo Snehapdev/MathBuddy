@@ -40,6 +40,7 @@ urlpatterns = [
 	path("equations/fetch/", fetch_equations),
 	path("equations/save/", save_equations),
 	path("equations/solve/", solve_equations),
+    path('equations/fetch/<int:equation_id>/', fetch_equation_by_id),
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
 ]

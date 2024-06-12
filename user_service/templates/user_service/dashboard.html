@@ -13,13 +13,12 @@
             right: 10px;
         }
         #equationSection {
-            float: left;
-            width: 25%;
-            margin-right: 5%;
+            width: 20%;
+            background-color: rgb(221, 212, 212);
         }
         #resultSection {
-            float: left;
-            width: 65%;
+            width: 70%;
+            
         }
         #saveButton {
             display: none;
@@ -29,37 +28,70 @@
             flex-direction: row;
         }
         .form-group input {
-            max-width: 400px;
+            max-width: 500px;
         }
+        .col-md-3 {
+            position: absolute;
+            left: 0;
+            height: 100vh; /* Full height */
+            background-color: black; /* Background color */
+            padding: 20px;
+            overflow-y: auto; /* Scroll if content is too long */
+            width: 15% !important;
+        }  
+        
+        .col-md-9 {
+            position: absolute;
+            left : 500px;
+            top : 100px;
+        } 
+        .form-control {
+            width: 40%
+        } 
+        
+
     </style>
 </head>
 <body>
-    <a href="{% url 'logout' %}" class="logout">Logout</a>
 
-    <div class="container mt-5">
-        <div class="row justify-content-center">
-            <div id="equationSection">
+    <div>
+        <div class="logout">
+            <a href="{% url 'logout' %}" >Logout</a>
+        </div>
+        <div>
+            <div id="equationSection" class="col-md-3">
                 <button id="fetchEquations" class="btn btn-primary">View My Equations</button>
                 <div id="equations"></div>
             </div>
-            <div id="resultSection">
-                <form id="inputForm">
-                    <div class="form-group">
-                        <label for="equation">Equation</label>
-                        <input type="text" class="form-control" id="equation" placeholder="Enter equation">
-                    </div>
-                    <div class="form-group">
-                        <label for="type">Type</label>
-                        <input type="text" class="form-control" id="type" placeholder="Enter type">
-                    </div>
-                    <div class="btn-container">
-                        <button type="submit" class="btn btn-primary">Submit</button>
-                        <button id="saveButton" class="btn btn-success ml-2">Save</button>
-                    </div>
-                </form>
-                <!-- Result display area -->
-                <div id="result" class="mt-4"></div>
-                <div id="saveButtonWrapper" class="mt-2"></div>
+        </div>
+        <div class="container mt-5">
+            <div class="row">
+            
+                <div id="resultSection" class="col-md-9">
+                    <form id="inputForm">
+                        <div class="form-group">
+                            <label for="equation">Equation</label>
+                            <input type="text" class="form-control" id="equation" placeholder="Enter equation">
+                        </div>
+                        <div class="form-group">
+                            <label for="type">Type</label>
+                            <select class="form-control" id="type" required>
+                                <option value="" disabled selected>Select equation type</option>
+                                <option value="arithmetic">Arithmetic</option>
+                                <option value="linear">Linear</option>
+                                <option value="trigonometric">Trigonometric</option>
+                                <option value="complex">Complex</option>
+                            </select>
+                        </div>
+                        <div class="btn-container">
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                            <button id="saveButton" class="btn btn-success ml-2">Save</button>
+                        </div>
+                    </form>
+                    <!-- Result display area -->
+                    <div id="result" class="mt-4"></div>
+                    <div id="saveButtonWrapper" class="mt-2"></div>
+                </div>
             </div>
         </div>
     </div>
@@ -77,7 +109,7 @@
                 $.ajax({
                     url: 'http://localhost:8000/equations/fetch/',
                     type: 'GET',
-                    data: { user_id: {{ user.id }} },  
+                    data: { user_id: {{ user.id }} },
                     success: function(data) {
                         let equations = data;
                         let html = '<ul>';
@@ -85,11 +117,37 @@
                             alert('No Saved Equations found!');
                         } else {
                             for (let eq of equations) {
-                                html += `<li>Equation: ${eq.equation}, Type: ${eq.type}, Solution: ${eq.solution}</li>`;
+                                html += `<li><a href="#" class="equation-link" data-id="${eq.id}"> ${eq.equation}</a><div class="equation-details" id="details-${eq.id}" style="display:none;"></div></li>`;
                             }
                         }
                         html += '</ul>';
                         $('#equations').html(html);
+
+                        // Add click event listener to each equation link
+                        $('.equation-link').click(function(event) {
+                            event.preventDefault();
+                            let eqId = $(this).data('id');
+                            let detailsDiv = $(`#details-${eqId}`);
+                            if (detailsDiv.is(':visible')) {
+                                detailsDiv.slideUp();
+                            } else {
+                                $.ajax({
+                                    url: `http://localhost:8000/equations/fetch/${eqId}/`,
+                                    type: 'GET',
+                                    success: function(data) {
+                                        let equationDetails = `
+                                            <br>
+                                            <p>Type: ${data.type}</p>
+                                            <p>Solution: ${data.solution}</p>
+                                        `;
+                                        detailsDiv.html(equationDetails).slideDown();
+                                    },
+                                    error: function(error) {
+                                        console.log('Error fetching equation details:', error);
+                                    }
+                                });
+                            }
+                        });
                     },
                     error: function(error) {
                         console.log('Error fetching equations:', error);
