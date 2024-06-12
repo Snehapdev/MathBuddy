@@ -4,7 +4,7 @@ from rest_framework.decorators import api_view, permission_classes
 from django.contrib.auth import get_user_model
 from django.shortcuts import render, redirect
 
-from . forms import CreateUserForm, LoginForm
+from . forms import CreateUserForm, LoginForm, UploadImageForm
 from django.contrib.auth.models import auth
 from django.contrib.auth import authenticate
 from django.contrib.auth.decorators import login_required
@@ -59,7 +59,8 @@ def logout(request):
 
 @login_required(login_url="login")
 def dashboard(request):
-    return render(request, 'user_service/dashboard.html')
+    form = UploadImageForm()
+    return render(request, 'user_service/dashboard.html',{'upload_form': form})
 
 @login_required
 def fetch_user_equations(request):
