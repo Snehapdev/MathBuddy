@@ -66,8 +66,12 @@
         </div>
         <div class="container mt-5">
             <div class="row">
-            
                 <div id="resultSection" class="col-md-9">
+                    <form id="uploadForm" method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        {{ upload_form.as_p }}
+                        <button type="submit" class="btn btn-primary" onclick=validateUploadForm()>Upload</button>
+                    </form>
                     <form id="inputForm">
                         <div class="form-group">
                             <label for="equation">Equation</label>
@@ -206,7 +210,7 @@
                     }
                 });
             });
-
+        });
             function displayResult(solution) {
                 const resultDiv = $('#result');
                 resultDiv.empty(); 
@@ -225,7 +229,31 @@
 
                 $('#saveButtonWrapper').html('<button id="saveButton" class="btn btn-success">Save Equations</button>');
             }
-        });
+
+            function validateUploadForm() {
+                var fileInput = document.getElementById('{{ upload_form.image.id_for_label }}');
+                var filePath = fileInput.value;
+                var allowedExtensions = /(\.jpg|\.jpeg|\.png)$/i;
+                var maxSize = 2 * 1024 * 1024; // 2 MB
+
+                // Check file format
+                if (!allowedExtensions.exec(filePath)) {
+                    alert('Unsupported file format. Supported formats: .jpg, .jpeg, .png');
+                    fileInput.value = '';
+                    return false;
+                }
+
+                // Check file size
+                if (fileInput.files && fileInput.files[0].size > maxSize) {
+                    alert('The image is too large. The maximum file size is 2 MB');
+                    fileInput.value = '';
+                    return false;
+                }
+
+                return true;
+        }
+        
+
     </script>
 </body>
 </html>
