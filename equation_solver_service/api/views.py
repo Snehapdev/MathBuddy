@@ -4,18 +4,12 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view
 import json
 from django.http import JsonResponse
-from services.equation_solver import solve_arithmetic_equation
-from services.equation_solver import solve_linear_equations
-from services.equation_solver import solve_trigonometric_equation
+from services.equation_solver import solve_trigonometric_equation, solve_equation_with_imaginary_unit, solve_linear_equations, solve_arithmetic_equation
 import logging
 from django.urls import path
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status
 from drf_yasg import openapi
-
-
-
-
 
 from api.serializers import EquationSerializer
 
@@ -64,6 +58,8 @@ def solve_equations(request):
             solution = solve_linear_equations(equation)
         elif equation_type == 'trigonometric':
             solution = solve_trigonometric_equation(equation)
+        elif equation_type == 'complex':
+            solution = solve_equation_with_imaginary_unit(equation)
         else:
             return JsonResponse({'error': 'Invalid equation type.'}, status=400)
     except Exception as e:
@@ -71,6 +67,9 @@ def solve_equations(request):
         return JsonResponse({'error': str(e)}, status=400)
     
     result = {"equation": equation, "type": equation_type, "solution": solution}
+    print(solution)
+    print(type(solution))
+    print(result["solution"])
     return JsonResponse({'message': 'Equation solved successfully', 'data': result}, status=status.HTTP_200_OK)
 
 

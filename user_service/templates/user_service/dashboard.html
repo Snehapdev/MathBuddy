@@ -159,10 +159,12 @@
                         const solutionString = solution.join(', ');
                         currentSolution = solutionString;
                         resultDiv.text(`Solution: ${solutionString}`);
-                    } else {
-                        resultDiv.text('Unexpected result format');
-                    }
+                    } 
                 }
+                else {
+                        resultDiv.text('Could not solve equation');
+                }
+
                 $('#saveButtonWrapper').html('<button id="saveButton" class="btn btn-success">Save Equations</button>');
             }
         });

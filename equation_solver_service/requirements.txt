@@ -3,6 +3,7 @@ django==4.1.2
 djangorestframework
 requests
 sympy
+scipy
 django-rest-swagger
 drf_yasg
 django-cors-headers
