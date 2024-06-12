@@ -39,9 +39,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'equation_solver_service',
     'rest_framework_swagger',
     'drf_yasg',
+    'api'
 ]
 
 MIDDLEWARE = [
@@ -121,6 +121,7 @@ DATABASES = {
         "PORT": "5432",
     }
 }
+
 
 
 # Password validation

@@ -172,21 +172,6 @@ REST_FRAMEWORK = {
     ],
 }
 
-# settings.py for user service
-SESSION_ENGINE = 'django.contrib.sessions.backends.cached_db'  # or use 'django.contrib.sessions.backends.cache' for cache-based sessions
-SESSION_CACHE_ALIAS = "default"
 
-# In your settings.py
-
-import os
-CACHES = {
-    'default': {
-        'BACKEND': 'django_redis.cache.RedisCache',
-        'LOCATION': f"redis://{os.getenv('REDIS_HOST', 'localhost')}:{os.getenv('REDIS_PORT', '6379')}/1",
-        'OPTIONS': {
-            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
-        }
-    }
-}
 
 

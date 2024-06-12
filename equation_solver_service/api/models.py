@@ -11,3 +11,6 @@ class Equation(models.Model):
 
     def __str__(self):
         return self.equation
+    
+    class Meta:
+        app_label = 'api' 

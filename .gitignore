@@ -2,5 +2,6 @@
 math_buddy_env
 __pycache__
 equation_solver_service/__pycache__
-equation_solver_service/services/__pycache__
+equation_solver_service/services/__pycache__/
 user_interface/__pycache__/
+equation_solver_service/services/__pycache__/equation_solver.cpython-39.pyc
