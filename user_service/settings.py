@@ -172,6 +172,6 @@ REST_FRAMEWORK = {
     ],
 }
 
-
+GOOGLE_VISION_API_KEY=''
 
 

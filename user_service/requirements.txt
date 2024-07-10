@@ -7,3 +7,4 @@ django-rest-swagger
 drf_yasg
 django-cors-headers
 django-redis
+Pillow==9.0.0

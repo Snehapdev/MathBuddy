@@ -10,8 +10,10 @@ from django.urls import path
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status
 from drf_yasg import openapi
-
 from api.serializers import EquationSerializer
+import io
+import base64
+import sympy as sp
 
 
 # Configure logging
@@ -34,6 +36,16 @@ def fetch_equations(request):
 
     equations = Equation.objects.filter(user_id=user_id)
     serializer = EquationSerializer(equations, many=True)
+    return Response(serializer.data)
+
+@api_view(["GET"])
+def fetch_equation_by_id(request, equation_id):
+    try:
+        equation = Equation.objects.get(id=equation_id)
+    except Equation.DoesNotExist:
+        return Response({"error": "Equation not found"}, status=status.HTTP_404_NOT_FOUND)
+
+    serializer = EquationSerializer(equation)
     return Response(serializer.data)
 
 @swagger_auto_schema(method='post', request_body=EquationSerializer)
@@ -89,3 +101,4 @@ def save_equations(request):
         return Response({"message": "Equation saved successfully"}, status=201)
     else:
         return JsonResponse(serializer.errors, status=400)
+
