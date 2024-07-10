@@ -7,6 +7,16 @@
     <!-- Bootstrap CSS -->
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <style>
+        .container {
+            display: flex;
+            gap: 10px;
+            padding:30px
+        }
+        .box {
+            border: 1px solid black;
+            padding: 20px;
+            text-align: center;
+        }
         .logout {
             position: absolute;
             top: 10px;
@@ -18,7 +28,6 @@
         }
         #resultSection {
             width: 70%;
-            
         }
         #saveButton {
             display: none;
@@ -33,71 +42,100 @@
         .col-md-3 {
             position: absolute;
             left: 0;
-            height: 100vh; /* Full height */
-            background-color: black; /* Background color */
+            height: 100vh;
+            background-color: black;
             padding: 20px;
-            overflow-y: auto; /* Scroll if content is too long */
+            overflow-y: auto;
             width: 15% !important;
         }  
-        
         .col-md-9 {
-            position: absolute;
-            left : 500px;
-            top : 100px;
-        } 
+            position: relative;
+            left: 15%;
+            width: 85%;
+        }
         .form-control {
-            width: 40%
-        } 
-        
-
+            width: 40%;
+        }
+        .image-preview {
+            max-width: 100%;
+            height: auto;
+            border: 1px solid #ddd;
+            padding: 5px;
+            margin-left: auto;
+            margin-right: auto;
+            display: block;
+        }
+        .uploaded-image {
+            max-width: 200px;
+            height: auto;
+            border: 1px solid #ddd;
+            padding: 5px;
+        }
+        .image-container {
+            position: absolute;
+            right: 10%;
+            top: 10%;
+            width: 300px;
+        }
+        #resultBox {
+            position: absolute;
+            left: 15%;  /* Align with left div */
+            width: 85%;
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
-
     <div>
-        <div class="logout">
-            <a href="{% url 'logout' %}" >Logout</a>
-        </div>
         <div>
             <div id="equationSection" class="col-md-3">
                 <button id="fetchEquations" class="btn btn-primary">View My Equations</button>
                 <div id="equations"></div>
             </div>
         </div>
-        <div class="container mt-5">
-            <div class="row">
-                <div id="resultSection" class="col-md-9">
-                    <form id="uploadForm" method="post" enctype="multipart/form-data">
-                        {% csrf_token %}
-                        {{ upload_form.as_p }}
-                        <button type="submit" class="btn btn-primary" onclick=validateUploadForm()>Upload</button>
-                    </form>
-                    <form id="inputForm">
-                        <div class="form-group">
-                            <label for="equation">Equation</label>
-                            <input type="text" class="form-control" id="equation" placeholder="Enter equation">
-                        </div>
-                        <div class="form-group">
-                            <label for="type">Type</label>
-                            <select class="form-control" id="type" required>
-                                <option value="" disabled selected>Select equation type</option>
-                                <option value="arithmetic">Arithmetic</option>
-                                <option value="linear">Linear</option>
-                                <option value="trigonometric">Trigonometric</option>
-                                <option value="complex">Complex</option>
-                            </select>
-                        </div>
-                        <div class="btn-container">
-                            <button type="submit" class="btn btn-primary">Submit</button>
-                            <button id="saveButton" class="btn btn-success ml-2">Save</button>
-                        </div>
-                    </form>
-                    <!-- Result display area -->
-                    <div id="result" class="mt-4"></div>
-                    <div id="saveButtonWrapper" class="mt-2"></div>
-                </div>
+        <div class="container">
+            <div class="logout">
+                <a href="{% url 'logout' %}">Logout</a>
+            </div>
+            <div id="resultSection" class="col-md-9">
+                <form id="uploadForm" method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {{ upload_form.as_p }}
+                    <button type="submit" class="btn btn-primary" onclick="validateUploadForm()">Upload</button>
+                </form>
+                <br></br>
+                <form id="inputForm">
+                    <div class="form-group">
+                        <label for="equation">Equation</label>
+                        <input type="text" class="form-control" id="equation" placeholder="Enter equation" value="{{ handwritten_text }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="type">Type</label>
+                        <select class="form-control" id="type" required>
+                            <option value="" disabled selected>Select equation type</option>
+                            <option value="arithmetic">Arithmetic</option>
+                            <option value="linear">Linear</option>
+                            <option value="trigonometric">Trigonometric</option>
+                            <option value="complex">Complex</option>
+                        </select>
+                    </div>
+                    <div class="btn-container">
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                        <button id="saveButton" class="btn btn-success ml-2">Save</button>
+                    </div>
+                </form>
+                <br></br>
+                <!-- Result display area -->
+                <div id="result" class="mt-4"></div>
+                <div id="saveButtonWrapper" class="mt-2"></div>
+            </div>
+            <div class="image-container">
+                {% if encoded_image %}
+                    <img src="data:image/jpeg;base64,{{ encoded_image }}" alt="Uploaded Image" class="uploaded-image">
+                {% endif %}
             </div>
         </div>
+        
     </div>
 
     <!-- Bootstrap JS and dependencies -->
@@ -106,9 +144,8 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
     <script>
+        let currentSolution = '';
         $(document).ready(function() {
-            let currentSolution = '';
-
             $('#fetchEquations').click(function() {
                 $.ajax({
                     url: 'http://localhost:8000/equations/fetch/',
@@ -211,46 +248,48 @@
                 });
             });
         });
-            function displayResult(solution) {
-                const resultDiv = $('#result');
-                resultDiv.empty(); 
-                if (typeof solution === 'number') {
-                    resultDiv.text(`Solution: ${solution}`);
-                } else if (typeof solution === 'object') {
-                    if (Array.isArray(solution)) {
-                        const solutionString = solution.join(', ');
-                        currentSolution = solutionString;
-                        resultDiv.text(`Solution: ${solutionString}`);
-                    } 
-                }
-                else {
-                        resultDiv.text('Could not solve equation');
-                }
 
-                $('#saveButtonWrapper').html('<button id="saveButton" class="btn btn-success">Save Equations</button>');
+        function displayResult(solution) {
+            const resultDiv = $('#result');
+            resultDiv.empty();
+            if (typeof solution === 'number') {
+                currentSolution = solution;
+                resultDiv.text(`Solution: ${solution}`);
+            } else if (typeof solution === 'object') {
+                if (Array.isArray(solution)) {
+                    const solutionString = solution.join(', ');
+                    currentSolution = solutionString;
+                    resultDiv.text(`Solution: ${solutionString}`);
+                }
+            } else {
+                resultDiv.text('Could not solve equation');
             }
 
-            function validateUploadForm() {
-                var fileInput = document.getElementById('{{ upload_form.image.id_for_label }}');
-                var filePath = fileInput.value;
-                var allowedExtensions = /(\.jpg|\.jpeg|\.png)$/i;
-                var maxSize = 2 * 1024 * 1024; // 2 MB
+            const resultHtml = `<div class="box" id="resultBox"><h3>Solution</h3><p>${currentSolution}</p></div>`;
+            $('#result').html(resultHtml);
+        }
 
-                // Check file format
-                if (!allowedExtensions.exec(filePath)) {
-                    alert('Unsupported file format. Supported formats: .jpg, .jpeg, .png');
-                    fileInput.value = '';
-                    return false;
-                }
+        function validateUploadForm() {
+            var fileInput = document.getElementById('{{ upload_form.image.id_for_label }}');
+            var filePath = fileInput.value;
+            var allowedExtensions = /(\.jpg|\.jpeg|\.png)$/i;
+            var maxSize = 2 * 1024 * 1024; // 2 MB
 
-                // Check file size
-                if (fileInput.files && fileInput.files[0].size > maxSize) {
-                    alert('The image is too large. The maximum file size is 2 MB');
-                    fileInput.value = '';
-                    return false;
-                }
+            // Check file format
+            if (!allowedExtensions.exec(filePath)) {
+                alert('Unsupported file format. Supported formats: .jpg, .jpeg, .png');
+                fileInput.value = '';
+                return false;
+            }
 
-                return true;
+            // Check file size
+            if (fileInput.files && fileInput.files[0].size > maxSize) {
+                alert('The image is too large. The maximum file size is 2 MB');
+                fileInput.value = '';
+                return false;
+            }
+
+            return true;
         }
         
 

@@ -10,8 +10,10 @@ from django.urls import path
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status
 from drf_yasg import openapi
-
 from api.serializers import EquationSerializer
+import io
+import base64
+import sympy as sp
 
 
 # Configure logging
@@ -99,3 +101,4 @@ def save_equations(request):
         return Response({"message": "Equation saved successfully"}, status=201)
     else:
         return JsonResponse(serializer.errors, status=400)
+
