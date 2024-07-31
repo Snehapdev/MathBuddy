@@ -43,4 +43,8 @@ urlpatterns = [
     path('equations/fetch/<int:equation_id>/', fetch_equation_by_id),
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
+    path('equations/solution-steps/<str:equation>/', get_equation_solution_steps, name='get_equation_solution_steps'),
+    path('equations/detect-type/', detect_equation_type, name='detect_equation_type'),
+    path('equations/generate_graph/', generate_graph, name='generate_graph'),
+
 ]

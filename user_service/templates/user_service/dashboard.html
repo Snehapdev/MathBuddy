@@ -7,103 +7,106 @@
     <!-- Bootstrap CSS -->
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        .container {
-            display: flex;
-            gap: 10px;
-            padding:30px
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
         }
-        .box {
-            border: 1px solid black;
+        .container {
+            max-width: 1500px;
+            margin: 40px auto;
+            background-color: #badcc5;
             padding: 20px;
-            text-align: center;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
         .logout {
             position: absolute;
             top: 10px;
             right: 10px;
         }
+        .section {
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            background-color: #fff;
+        }
         #equationSection {
-            width: 20%;
             background-color: rgb(221, 212, 212);
         }
         #resultSection {
-            width: 70%;
+            background-color: #f8f9fa;
+            overflow: hidden; /* Ensure the content doesn't overflow the container */
+
         }
-        #saveButton {
-            display: none;
+        #imageContainer {
+            background-color: #e9ecef;
         }
         .btn-container {
             display: flex;
             flex-direction: row;
+            gap: 10px;
+            margin-top: 20px;
         }
-        .form-group input {
-            max-width: 500px;
-        }
-        .col-md-3 {
-            position: absolute;
-            left: 0;
-            height: 100vh;
-            background-color: black;
-            padding: 20px;
-            overflow-y: auto;
-            width: 15% !important;
-        }  
-        .col-md-9 {
-            position: relative;
-            left: 15%;
-            width: 85%;
-        }
-        .form-control {
-            width: 40%;
-        }
-        .image-preview {
+        .form-group input,
+        .form-group select {
             max-width: 100%;
-            height: auto;
-            border: 1px solid #ddd;
-            padding: 5px;
-            margin-left: auto;
-            margin-right: auto;
-            display: block;
         }
         .uploaded-image {
-            max-width: 200px;
+            max-width: 100%;
             height: auto;
             border: 1px solid #ddd;
             padding: 5px;
         }
         .image-container {
-            position: absolute;
-            right: 10%;
-            top: 10%;
-            width: 300px;
+            text-align: center;
         }
         #resultBox {
-            position: absolute;
-            left: 15%;  /* Align with left div */
-            width: 85%;
             margin-top: 20px;
+        }
+        .col-md-4 {
+            padding: 0 10px;
+        }
+
+        /* Green button styling */
+        .btn-green {
+            background-color: #097121; /* Green background */
+            border-color: #097121; /* Green border */
+            color: #fff; /* White text */
+        }
+
+        .btn-green:hover {
+            background-color: #218838; /* Darker green for hover */
+            border-color: #1e7e34; /* Darker green border on hover */
+        }
+
+        .image-preview {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 0 auto; /* Center the image horizontally */
         }
     </style>
 </head>
 <body>
-    <div>
-        <div>
-            <div id="equationSection" class="col-md-3">
-                <button id="fetchEquations" class="btn btn-primary">View My Equations</button>
+    <div class="container">
+        <div class="logout">
+            <a href="{% url 'logout' %}">Logout</a>
+        </div>
+        <div class="row">
+            <div id="equationSection" class="col-md-2 section">
+                <button id="fetchEquations" class="btn btn-green btn-block">View My Equations</button>
+                <br>
                 <div id="equations"></div>
             </div>
-        </div>
-        <div class="container">
-            <div class="logout">
-                <a href="{% url 'logout' %}">Logout</a>
-            </div>
-            <div id="resultSection" class="col-md-9">
+            <div id="gap" class="col-md-1"></div>
+            <div id="resultSection" class="col-md-6 section">
                 <form id="uploadForm" method="post" enctype="multipart/form-data">
                     {% csrf_token %}
                     {{ upload_form.as_p }}
-                    <button type="submit" class="btn btn-primary" onclick="validateUploadForm()">Upload</button>
+                    <button type="submit" class="btn btn-green" onclick="return validateUploadForm()">Upload</button>
                 </form>
-                <br></br>
+                <br><br>
                 <form id="inputForm">
                     <div class="form-group">
                         <label for="equation">Equation</label>
@@ -112,30 +115,31 @@
                     <div class="form-group">
                         <label for="type">Type</label>
                         <select class="form-control" id="type" required>
-                            <option value="" disabled selected>Select equation type</option>
-                            <option value="arithmetic">Arithmetic</option>
-                            <option value="linear">Linear</option>
-                            <option value="trigonometric">Trigonometric</option>
-                            <option value="complex">Complex</option>
+                            <option value="" disabled {% if not equation_type %}selected{% endif %}>Select equation type</option>
+                            <option value="arithmetic" {% if equation_type == 'arithmetic' %}selected{% endif %}>Arithmetic</option>
+                            <option value="linear" {% if equation_type == 'linear' %}selected{% endif %}>Linear</option>
+                            <option value="trigonometric" {% if equation_type == 'trigonometric' %}selected{% endif %}>Trigonometric</option>
+                            <option value="complex" {% if equation_type == 'complex' %}selected{% endif %}>Complex</option>
                         </select>
                     </div>
                     <div class="btn-container">
-                        <button type="submit" class="btn btn-primary">Submit</button>
-                        <button id="saveButton" class="btn btn-success ml-2">Save</button>
+                        <button type="submit" class="btn btn-green">Submit</button>
+                        <button id="getExplanationButton" class="btn btn-green" style="display:none;">Get Explanation</button>
+                        <button id="saveButton" class="btn btn-green ml-2" style="display:none;">Save</button>
+                        <button id="generateGraphButton" class="btn btn-green ml-2">Generate Graph</button>
                     </div>
                 </form>
-                <br></br>
-                <!-- Result display area -->
                 <div id="result" class="mt-4"></div>
-                <div id="saveButtonWrapper" class="mt-2"></div>
             </div>
-            <div class="image-container">
-                {% if encoded_image %}
-                    <img src="data:image/jpeg;base64,{{ encoded_image }}" alt="Uploaded Image" class="uploaded-image">
-                {% endif %}
+            <div id="gap" class="col-md-1"></div>
+            <div id="imageContainer" class="col-md-2 section">
+                <div class="image-container">
+                    {% if encoded_image %}
+                        <img src="data:image/jpeg;base64,{{ encoded_image }}" alt="Uploaded Image" class="uploaded-image">
+                    {% endif %}
+                </div>
             </div>
         </div>
-        
     </div>
 
     <!-- Bootstrap JS and dependencies -->
@@ -196,6 +200,29 @@
                 });
             });
 
+            // Automatically populate the type field based on the equation input
+            $('#equation').on('input', function() {
+                const equation = $(this).val();
+
+                if (equation.trim() !== '') {
+                    $.ajax({
+                        type: 'POST',
+                        url: 'http://localhost:8000/equations/detect-type/',
+                        contentType: 'application/json',
+                        data: JSON.stringify({ equation }),
+                        success: function (response) {
+                            console.log('Detected Type:', response.type);
+                            $('#type').val(response.type);
+                        },
+                        error: function (error) {
+                            console.log('Error detecting equation type:', error);
+                        }
+                    });
+                } else {
+                    $('#type').val('');
+                }
+            });
+
             $('#inputForm').on('submit', function(e) {
                 e.preventDefault();
 
@@ -212,19 +239,43 @@
                     success: function (response) {
                         console.log('Success:', response);
                         displayResult(response.data.solution);
-                        $('#saveButton').show();
                     },
                     error: function (error) {
-                        currentSolution = ''
-                        const resultDiv = $('#result');
-                        resultDiv.empty(); 
-                        resultDiv.text(`Error: ${error.responseJSON.error}`);
                         console.log('Error:', error);
                     }
                 });
             });
 
-            $('#saveButton').click(function() {
+            $(document).ready(function() {
+                $('#generateGraphButton').click(function(e) {
+                    e.preventDefault();
+
+                    const equation = $('#equation').val();
+                    const type = $('#type').val();
+
+                    $.ajax({
+                        type: 'POST',
+                        url: 'http://localhost:8000/equations/generate_graph/',
+                        contentType: 'application/json',
+                        data: JSON.stringify({ equation: equation, type: type }),
+                        success: function(response) {
+                            if (response.image) {
+                                const imgElement = `<img src="data:image/png;base64,${response.image}" alt="Generated Graph" class="image-preview">`;
+                                $('#result').append(imgElement);
+                            } else {
+                                $('#result').text('Could not generate the graph.');
+                            }
+                        },
+                        error: function(error) {
+                            $('#result').text(`Error: ${error.responseJSON.error}`);
+                            console.log('Error:', error);
+                        }
+                    });
+                });
+            });
+
+
+            $('#saveButton').on('click', function() {
                 const data = {
                     equation: $('#equation').val(),
                     type: $('#type').val(),
@@ -238,12 +289,32 @@
                     contentType: 'application/json',
                     data: JSON.stringify(data),
                     success: function (response) {
-                        console.log('Equations saved:', response);
-                        alert('Equations saved successfully!');
+                        alert('Equation saved successfully!');
+                        console.log('Save Response:', response);
                     },
                     error: function (error) {
-                        console.log('Error saving equations:', error);
-                        alert('Error saving equations.');
+                        console.log('Error saving equation:', error);
+                    }
+                });
+            });
+
+            $('#getExplanationButton').click(function(e) {
+                e.preventDefault();
+
+                const equation = $('#equation').val();
+
+                $.ajax({
+                    type: 'GET',
+                    url: `http://localhost:8000/equations/solution-steps/${encodeURIComponent(equation)}/`,
+                    success: function (response) {
+                        console.log('Explanation:', response);
+                        displayExplanation(response.solution_steps);
+                    },
+                    error: function (error) {
+                        const resultDiv = $('#result');
+                        resultDiv.empty(); 
+                        resultDiv.text(`Error: ${error.responseJSON.error}`);
+                        console.log('Error:', error);
                     }
                 });
             });
@@ -267,32 +338,36 @@
 
             const resultHtml = `<div class="box" id="resultBox"><h3>Solution</h3><p>${currentSolution}</p></div>`;
             $('#result').html(resultHtml);
+            // Show the "Save" and "Get Explanation" buttons
+            $('#saveButton').show();
+            $('#getExplanationButton').show();
         }
 
         function validateUploadForm() {
-            var fileInput = document.getElementById('{{ upload_form.image.id_for_label }}');
-            var filePath = fileInput.value;
-            var allowedExtensions = /(\.jpg|\.jpeg|\.png)$/i;
-            var maxSize = 2 * 1024 * 1024; // 2 MB
-
-            // Check file format
-            if (!allowedExtensions.exec(filePath)) {
-                alert('Unsupported file format. Supported formats: .jpg, .jpeg, .png');
-                fileInput.value = '';
+            const fileInput = $('#id_image');
+            if (fileInput.get(0).files.length === 0) {
+                alert("Please select an image to upload.");
                 return false;
             }
-
-            // Check file size
-            if (fileInput.files && fileInput.files[0].size > maxSize) {
-                alert('The image is too large. The maximum file size is 2 MB');
-                fileInput.value = '';
-                return false;
-            }
-
             return true;
         }
-        
 
+        function displayExplanation(solution_steps) {
+            const resultDiv = $('#result');
+            resultDiv.empty();
+            if (typeof solution_steps === 'string') {
+                // Remove double asterisks
+                const formattedSolutionSteps = solution_steps.replace(/\*\*/g, '');
+                // Create a preformatted text element to preserve whitespace and line breaks
+                const preElement = `<pre>${formattedSolutionSteps}</pre>`;
+                resultDiv.append(preElement);
+            } else {
+                resultDiv.text('Unexpected explanation format');
+            }
+        }
+
+
+        
     </script>
 </body>
 </html>
