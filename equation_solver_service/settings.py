@@ -165,4 +165,4 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-GEN_LANGUAGE_API_KEY=''
+GEN_LANGUAGE_API_KEY='AIzaSyA9zsQO4ZcsLCgkus6ANszzI-gvpKixjlY'
