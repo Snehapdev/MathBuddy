@@ -2,8 +2,11 @@
 import sympy as sp
 from sympy import Symbol, Eq, solve, pi, Interval
 import re
-import re
 from scipy.optimize import fsolve
+import google.generativeai as genai
+from django.conf import settings
+
+
 def solve_arithmetic_equation(equation):
     try:
         equation = re.sub(r'√([a-zA-Z0-9]*)', r'sqrt(\1)', equation)
@@ -154,3 +157,26 @@ def solve_equation_with_imaginary_unit(equation):
     
     except Exception as e:
         raise ValueError(f"Could not solve the equations: {str(e)}")
+    
+# Function to sense the type of mathematical equation
+def sense_math_equation(equation):
+    # Configure your API key
+    genai.configure(api_key=settings.GEN_LANGUAGE_API_KEY)
+    # Choose a model that's appropriate for your use case
+    model = genai.GenerativeModel('gemini-1.5-flash')
+
+    # Create the prompt with the equation
+    prompt = f"Classify the following mathematical equation as one of the following types: linear, trigonometric, arithmetic, or complex. Only respond with the type. Equation: {equation}"
+    response = model.generate_content(prompt)
+
+    # List of valid types
+    valid_types = {'linear', 'trigonometric', 'arithmetic', 'complex'}
+    
+    # Extract the response text and filter it
+    if response:
+        response_text = response.text.strip().lower()
+        # Return the first valid type found in the response
+        for valid_type in valid_types:
+            if valid_type in response_text:
+                return valid_type
+    return "Error"

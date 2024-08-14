@@ -8,3 +8,4 @@ drf_yasg
 django-cors-headers
 django-redis
 Pillow==9.0.0
+google-generativeai
